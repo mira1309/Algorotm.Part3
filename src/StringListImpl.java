@@ -6,8 +6,10 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.Arrays;
 
+import static com.sun.java.util.jar.pack.ConstantPool.partition;
+
 public class IntegerListImpl implements IntegerList.IntegerList {
-    private final Integer[] storage;
+    private Integer[] storage;
     private int size;
 
 
@@ -22,7 +24,7 @@ public class IntegerListImpl implements IntegerList.IntegerList {
 
     @Override
     public Integer add(Integer item) {
-        validateSize();
+        growIfNeeded();
         validateItem(item);
         storage[size++] = item;
         return item;
@@ -32,7 +34,7 @@ public class IntegerListImpl implements IntegerList.IntegerList {
     @Override
     public Integer add(int index, Integer item) {
 
-        validateSize();
+        growIfNeeded();
         validateItem(item);
         validateIndex(index);
 
@@ -146,9 +148,10 @@ public class IntegerListImpl implements IntegerList.IntegerList {
             throw new NullItemException();
         }
     }
-    private void validateSize() {
+    @Contract(mutates = "this")
+    private void growIfNeeded() {
         if(size == storage.length) {
-            throw new StorageIsFullException();
+            grow();
         }
     }
     private void validateIndex (int index) {
@@ -157,16 +160,38 @@ public class IntegerListImpl implements IntegerList.IntegerList {
         }
     }
     private void sort(Integer[] arr) {
-        for (int i =1; i< arr.length; i++) {
-            int temp = arr[i];
-            int i = 1;
-            while (i > 0 && arr[i - 1] >= temp) {
-                arr[i] = arr[i - 1];
-                i--;
-            }
-            arr[i] = temp;
+        quickSort(arr, 0, arr.length - 1);
+    }
+
+    private void quickSort(Integer[] arr, int begin, int end) {
+        if (begin< end) {
+            int partitionIndex = partition (arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex -1);
+            quickSort(arr, partitionIndex +1, end);
         }
     }
+    private int partition (Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int i - begin; i < end; i++){
+            if (arr[i] <= pivot){
+                i++;
+
+                snapElements (arr, i, i):
+                }
+            }
+        snapElements (arr, i + 1); end);
+        return i +1;
+
+    }
+    private void snapElements(Integer[] arr, int i1, int i2) {
+        int temp = arr[i1];
+        arr[i1] = arr[i2];
+        arr[i2] = temp;
+    }
+
     private boolean binarySearch (Integer[] arr, Integer item) {
         int min = 0;
         int max = arr.length - 1;
@@ -184,6 +209,9 @@ public class IntegerListImpl implements IntegerList.IntegerList {
             }
         }
         return false;
+    }
+    private void grow(){
+        storage = Arrays.copyOf(storage, size +size/2)
     }
 
 
