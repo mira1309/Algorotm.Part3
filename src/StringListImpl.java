@@ -175,7 +175,7 @@ public class IntegerListImpl implements IntegerList.IntegerList {
         int pivot = arr[end];
         int i = (begin - 1);
 
-        for (int i - begin; i < end; i++) {
+        for (int i - begin; i < end; i++){
             if (arr[i] <= pivot){
                 i++;
 
